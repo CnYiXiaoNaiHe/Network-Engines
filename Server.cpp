@@ -43,11 +43,8 @@ int main()
     sockaddr_in clientAddr = {};
     int nAddrLen = sizeof(sockaddr_in);
     SOCKET _cSock = INVALID_SOCKET;
-    char msgBuf[] = "hello , This is Server!";
 
-    while (true)
-    {
-     _cSock = accept(_sock,(sockaddr*)&clientAddr,&nAddrLen);
+    _cSock = accept(_sock,(sockaddr*)&clientAddr,&nAddrLen);
     if(INVALID_SOCKET == _cSock)
     {
         printf("accept error!\n");
@@ -55,7 +52,33 @@ int main()
 
     printf("New connections join,Ip: %d",inet_ntoa(clientAddr.sin_addr));
 
-    send(_cSock,msgBuf,strlen(msgBuf) + 1,0); 
+
+    char _recvBuf[128] = {};
+
+    while (true)
+    {
+      
+      int nLen = recv(_cSock,_recvBuf,128,0);
+      if(nLen <= 0)
+      {
+          printf("maybe Clinet exit!\n");
+          break;
+      }
+
+      if( 0 == strcmp(_recvBuf,"getname"))
+      {
+          char msgBuf[] = "张三";
+           send(_cSock,msgBuf,strlen(msgBuf) + 1,0); 
+      }
+      else if(0 == strcmp(_recvBuf,"getage"))
+      {
+          char msgBuf[] = "23";
+            send(_cSock,msgBuf,strlen(msgBuf) + 1,0); 
+      }
+      else{
+          char msgBuf[] = "??????";
+          send(_cSock,msgBuf,strlen(msgBuf) + 1,0); 
+      }
 
    }
    
